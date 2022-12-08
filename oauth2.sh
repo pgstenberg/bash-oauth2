@@ -1,5 +1,7 @@
 #!/bin/bash
 
+log() { echo "$@" 1>&2; }
+
 client_id=$1
 authorization_url=$2
 token_endpoint=$3
@@ -8,6 +10,9 @@ tmp_file_with_code=$(mktemp)
 
 code_verifier=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w ${4:-128} | head -n 1)
 code_challenge=$(echo -n $code_verifier | openssl dgst -sha256 -binary | basenc --base64url -w0 | tr -d '=')
+
+log "code_verifier=$code_verifier"
+log "code_challenge=$code_challenge"
 
 # Handle callback
 echo `python - << EOF
@@ -38,7 +43,11 @@ EOF` > $tmp_file_with_code &
 
 callback_pid=$!
 
+log "callback_pid=$callback_pid"
+
 authorization_request="$authorization_url?response_type=code&client_id=$client_id&code_challenge=$code_challenge&code_challenge_method=S256&redirect_uri=http://localhost:9999"
+
+log "authorization_request=$authorization_request"
 
 case "$OSTYPE" in
   solaris*) xdg-open "$authorization_request" ;;
@@ -53,6 +62,7 @@ esac
 wait $callback_pid
 code=$(cat $tmp_file_with_code)
 
+log "code=$code"
 
 curl -s \
   "$token_endpoint" \

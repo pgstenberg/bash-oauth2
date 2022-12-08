@@ -14,7 +14,7 @@ chmod +x /data/data/com.termux/files/usr/bin/oauth2
 
 ## Using it with ssh
 
-The intention is to use this with sshpass to allow a neat integration with oauth2 pam modules.
+The intention is to use this with sshpass to allow a neat integration with oauth2 pam modules, e.g. [pam-oauth2](https://github.com/pgstenberg/pam-oauth2).
 This can be done be simply adding this function into your shell of your choose profile configuration.
 
 ```bash
